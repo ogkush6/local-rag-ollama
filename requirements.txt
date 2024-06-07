@@ -1,0 +1,10 @@
+beautifulsoup4==4.12.3
+chainlit==1.1.202
+chromadb==0.4.24
+langchain==0.2.3
+langchain_community==0.2.4
+langchain_core==0.2.5
+langchain_experimental==0.0.60
+ollama==0.2.1
+tqdm==4.66.1
+sentence_transformers
