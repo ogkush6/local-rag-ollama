@@ -37,27 +37,6 @@ from ollamaModule import check_if_model_is_available
 from ollama import chat
 
 
-
-
-
-PROMPT_TEMPLATE = """
-    ### Instuction: 
-    - You are one of the best assistant who carries out only the instructions given below, and nothing else. 
-    - The question may be posed incorrectly, or be in a different language, try to understand what the user wants from you and what you would answer using his documents, so you can only use user materials.
-    - You shouldn’t invent information or somehow try to connect the pieces of these paragraphs with each other, so if you can’t answer from the documents, then there is no answer to the question. You cannot use your internal knowledge to generate the answer and also quote them, since in our application we must generate the answer only based on user documents. Therefore, if you cannot provide a correct answer on user materials, offer the user the name of PDF files, after loading which into the database, we will be able to process user data.
-    - If you can still answer the question using user materials, then make a short answer, just be sure to indicate on the basis of which user documents you made your answer. It is very important for us that the answer contains the resources on the basis of which you made the answer. Since this allows the user to quickly find a fragment that can help him with the answer.
-    - User documents resources will be indicated in the form.
-
-    ### User documents: 
-    {context}
-
-    ### Question:
-    {question}
-
-
-"""
-
-
 PROMPT_TEMPLATE = """
     ### Instuction: 
     - You help us generate the response of our application. The main point of our application is to answer the question using only materials provided by the user. You cannot generate text that is not in the provided user documents. We need your generated text to be found in the documents.
@@ -75,73 +54,6 @@ PROMPT_TEMPLATE = """
 """
 
 
-PROMPT_TEMPLATE = """
-    ### Instuction: 
-    - Hello, you are an assistant in our application. The main goal of our application is to provide an answer based only on user materials. Our main challenge is to make sure that language models can not use their knowledge on which they were trained, but use only user documents. Our application is based on answering user request according to user submissions. Essentially, text is loaded into our application, and then we give you only those parts of the documents that we think will help answer the user’s question. It may also be that the documents that we provided to you may not contain an answer to the user request.
-    - The user's request may be in a different language, or may not be written correctly or be complete. You need to clearly understand the meaning of the request.
-    - If you cannot give a clear answer to the user's request, you need to inform the user that our application cannot process the user's request In no case do not use your internal knowledge, so you need to inform the user that the answer to his request cannot be generated and offer him options for documents when sent to the chat which may change.
-    - If you still think that user documents can provide an answer to the user's request, then you need to generate a good answer using only user materials. It is also necessary to indicate the name of the resources that served as the impetus for this answer.
-
-    ### User documents: 
-    {context}
-
-    ### Question:
-    {question}
-
-
-"""
-
-
-PROMPT_TEMPLATE = """
-
-QUESTION:
-Enter the role of an assistant who has only the documents provided in front of you and try not to use your internal documents, but only to provide me with an clear and short answer using the text of the documents. Give me short answer! If you say that there is no answer in the documents and there really isn’t one, then that’s correct. If you provide me with an answer based on data that is not in the document, the answer is considered not relevant and I will be very sad that you did not clearly understand me. If you provide me with an answer to a question and there is no answer in the documents, this is considered not relevant answer, so tell me the name of the documents so that I can check it.
-{question}
-
-
-DOCUMENTS:
-{context}
-
-"""
-
-# PROMPT_TEMPLATE = """
-#     ### Instuction: 
-#     - You are one of the best assistant who carries out only the instructions given below, and nothing else. 
-#     - We provide a response to the user request according to the documents that were provided. It is very important for us that the answer is generated only on the basis of the materials provided. The request may be in another language, or composed incorrectly or incompletely. Try to understand what the user wants. The question may be posed incorrectly, or be in a *different language*, try to understand what the user wants from you and what you would answer using his documents, so you can only use user materials.
-#     - You shouldn’t invent information or somehow try to connect the pieces of these paragraphs with each other, so if you can’t answer from the documents, then there is no answer to the question. You cannot use your internal knowledge to generate the answer and also quote them, since in our application we must generate the answer only based on user documents. Therefore, if you cannot provide a correct answer on user materials, offer the user the name of PDF files, after loading which into the database, we will be able to process user data.
-#     - If you can still answer the question using user materials, please create a correct, clear and focused answer based on the files that the user provided that can actually help answer the question. When generating a question, indicate the resources of the files from which you took the material. Since the user is interested in which files were taken in order to answer the question. The user always needs to indicate resources, consider this as his request.
-#     - User documents resources will be indicated in the form.
-
-#     ### User documents: 
-#     {context}
-
-#     ### Question:
-#     {question}
-
-
-# """
-
-# PROMPT_TEMPLATE = """
-#     ### Instuction: 
-#     - You are our most important part of the application in the generation part, so be responsible and strictly follow the instructions. 
-#     - We provide a response to the user request according to the documents that were provided. It is very important for us that the answer is generated only on the basis of the materials provided. The request may be in another language, or composed incorrectly or incompletely. Try to understand what the user wants.
-#     - If using documents it is not possible to compose a correct answer, then advise the user what documents he should download so that our application can give the correct answer. You cannot use your internal knowledge to generate the answer and also quote them, since in our application we must generate the answer only based on user documents. Therefore, if you cannot provide a correct answer on user materials, tell the user what PDF materials he can upload to chat so that you can correctly process his request.
-#     - Using the material that was provided to you, try to give a complete, correct and clear answer to the request. It is very important for us that the answer contains the resources on the basis of which you made the answer. Since this allows the user to quickly find a fragment that can help him with the answer.
-#     - User documents sources will be indicated in the form format like: Source - > file: [file_name], page: [page_number]
-
-#     ### User documents: 
-#     {context}
-
-#     ### Question:
-#     {question}
-
-
-# """
-
-sad_prompt = """
-In general, analyze the question and decide whether it is just a welcome message, valid question or instructions related to chat history. If this is a welcome question, say hello to the user. If this message is a valid question, then the user entered an inappropriate question, tell the user that we cannot provide an answer to his question based on the documents we have. If this is an instruction that is related to the chat history, then try to use it to fulfill the user’s request.
-
-Question: """
 
 sad_prompt = """
 We want to model your behavior. We need the following from you. Inform the user that according to his request, no documents were found in our application to answer his question. Therefore, invite him to upload his document in order to answer the request. Tell the user what documents he could use to make sure our application responded to his request. Our application only allows upload PDF documents. But don’t try to help the user yourself, this is incorrect behavior.
@@ -149,15 +61,10 @@ We want to model your behavior. We need the following from you. Inform the user 
 
 
 prompt_for_halucinacion = """
-Hello, you are a very helpfull AI assistent. The question may not be asked properly or correctly, or in a different language, try to determine for yourself the main meaning of the question, so could you, without taking this into account, try to formulate two or three questions in English that would help you answer.
+Hello, you are a very helpfull AI assistent. The question may not be asked properly or correctly, or in a different language, try to determine for yourself the main meaning of the question, so could you, without taking this into account, try to formulate answer in English.
 
 Question: """
 
-
-prompt_for_halucinacion = """
-Hello, in general, the user may have asked the question incorrectly, or you can process the request in another language and give an answer to it. 
-
-Question: """
 
     
 prompt = PromptTemplate(
@@ -192,7 +99,7 @@ async def on_chat_start():
         actions=[
             cl.Action(name="full_db", value="full-db", label="🎒 Full-db"),
             cl.Action(name="sincak_db", value="sincak-db", label="⏰Prof. Sincak DB"),
-            cl.Action(name="empty_db", value="faiss-index", label="Empty db"),
+            cl.Action(name="empty_db", value="empty-db", label="Empty db"),
         ],
     ).send()
 
@@ -206,7 +113,6 @@ async def on_chat_start():
         await cl.Message(
             content="You select "+res.get("value")+", enjoy",
         ).send()
-    #faissdb = FAISS.load_local("sincak-db", embedding, allow_dangerous_deserialization=True) 
     settings = await cl.ChatSettings(
         [
             Slider(
