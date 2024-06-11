@@ -192,7 +192,7 @@ async def on_chat_start():
         actions=[
             cl.Action(name="full_db", value="full-db", label="🎒 Full-db"),
             cl.Action(name="sincak_db", value="sincak-db", label="⏰Prof. Sincak DB"),
-            cl.Action(name="empty_db", value="empty-db", label="Empty db"),
+            cl.Action(name="empty_db", value="faiss-index", label="Empty db"),
         ],
     ).send()
 
