@@ -1,4 +1,4 @@
-# Local RAG
+# Local RAG(Not all files are in the repository)
 ---
 
 The project implements the deployment of the language model locally, with the implementation of the response only using upload documents. The project includes loading with an internal database (possibly several timatic ones), as well as loading documents from the user and adding them to the general vector database. The project is already implementing two processed vector databases. And also the ability to start without them (from an empty database). You can also create your own database. The project was done as part of a university assignment, so a lot of it was done in haste.
