@@ -21,7 +21,7 @@ from langchain_community.document_loaders import (
 )
 from langchain_experimental.text_splitter import SemanticChunker 
 from langchain.globals import set_verbose
-from loadingModule import (loading_documents_and_create_db, loading_document_and_add_to_db, update_retriever)
+from loadingModule import (loading_document_and_add_to_db, update_retriever)
 #set_verbose(True)
 import time
 import chainlit as cl 
