@@ -31,14 +31,14 @@ Your chatbot UI should now be accessible at http://localhost:8000.
 
 ### Examples
 ---
-![Exmaple of ML answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLDoc.JPG)
 ![ML answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLAnswer.JPG)
+![Exmaple of ML answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLDoc.JPG)
 ---
 ![Linear Regression in python answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/linearRegression.JPG)
 ![Linear Regression in python answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/reggressionLinear.JPG)
 ---
-![Neural wiki answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/neuralWikiDoc.png)
 ![Neural wiki answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/neuralWikiAnswer.png)
+![Neural wiki answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/neuralWikiDoc.png)
 
 
 
