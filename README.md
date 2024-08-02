@@ -21,7 +21,7 @@ To run locally on your computer, you can enter a simplified command.
 Your chatbot UI should now be accessible at http://localhost:8000.
 
 
-![Alt text](https://github.com/sidjik/local-rag-ollama/imgs/MLDoc.JPG)
+![Alt text](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLDoc.JPG)
 
 
 
