@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 from langchain.chains import RetrievalQA
 import os
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.embeddings import OllamaEmbeddings
 from langchain_experimental.text_splitter import SemanticChunker 
 from tqdm import tqdm
 from langchain_community.document_loaders import (
@@ -25,13 +25,9 @@ def loading_documents_and_save_db(file_path, db_name, model_name):
     files = os.listdir(absolute_path)
     
     if model_name == "":
-        embedding = HuggingFaceBgeEmbeddings(
-            model_name="BAAI/bge-base-en",
-            model_kwargs={'device': 'cuda'},
-            encode_kwargs={'normalize_embeddings': True}
-            )
-    else:
-        embedding = OllamaEmbeddings(model=model_name)
+        model_name = "deepseek-r1:7b"
+    
+    embedding = OllamaEmbeddings(model=model_name)
     
     text_splitter = SemanticChunker(embedding, buffer_size=7, breakpoint_threshold_type="interquartile") 
     documents = []
@@ -87,24 +83,68 @@ def loading_documents_and_save_db(file_path, db_name, model_name):
 
 
 def loading_document_and_add_to_db(file_path, embedding, faissdb, file_name): 
-    
-    text_splitter = SemanticChunker(embedding, buffer_size=7, breakpoint_threshold_type="interquartile")
-    documents = []
-    print(text_splitter)
-    loader = PyMuPDFLoader(file_path)
-    data = loader.load_and_split(text_splitter)
-    for j in data: 
-        if(len(j.page_content) > 12): 
-            documents.append(j)
-    docs = []
-    for i in range(len(documents)):
-        docs.append(Document(page_content="[[metadata: file: {}, page: {}]\n[Text: ".format(documents[i].metadata['source'].split('/')[-1], str(int(documents[i].metadata['page'])+1))+documents[i].page_content.replace('\n', ' ').replace('\\', ' ').replace('\t', ' ').replace('  ', ' ')+"]]", metadata=documents[i].metadata))    
-    
-
-
-    faissdb.merge_from(FAISS.from_documents(docs, embedding))
-    return faissdb
-    
+    try:
+        # Check for PyMuPDF import
+        try:
+            from langchain_community.document_loaders import PyMuPDFLoader
+        except ImportError:
+            raise ImportError(
+                "Unable to import PyMuPDFLoader. Please install with 'pip install pymupdf'"
+            )
+        
+        text_splitter = SemanticChunker(embedding, buffer_size=7, breakpoint_threshold_type="interquartile")
+        documents = []
+        print(f"Loading document: {file_name}")
+        
+        # Load the PDF file
+        loader = PyMuPDFLoader(file_path)
+        data = loader.load_and_split(text_splitter)
+        
+        # Filter out short content
+        for j in data: 
+            if(len(j.page_content) > 12): 
+                documents.append(j)
+                
+        # Check if any documents were extracted
+        if not documents:
+            print(f"Warning: No usable content found in {file_name}")
+        
+        # Create documents with formatted metadata
+        docs = []
+        for i in range(len(documents)):
+            try:
+                # Clean up the text content to avoid encoding issues
+                clean_content = (documents[i].page_content
+                                .replace('\n', ' ')
+                                .replace('\\', ' ')
+                                .replace('\t', ' ')
+                                .replace('  ', ' '))
+                
+                # Format the document with metadata
+                doc = Document(
+                    page_content=f"[[metadata: file: {documents[i].metadata['source'].split('/')[-1]}, page: {str(int(documents[i].metadata['page'])+1)}]\n[Text: {clean_content}]]", 
+                    metadata=documents[i].metadata
+                )
+                docs.append(doc)
+            except Exception as e:
+                print(f"Error processing document page {i}: {str(e)}")
+        
+        # Create a new FAISS index with the documents and merge with existing
+        if docs:
+            print(f"Adding {len(docs)} segments from {file_name} to vector database")
+            faissdb.merge_from(FAISS.from_documents(docs, embedding))
+            print(f"Successfully added {file_name} to vector database")
+        else:
+            print(f"No documents to add from {file_name}")
+            
+        return faissdb
+        
+    except ImportError as e:
+        print(f"Import error: {str(e)}")
+        raise
+    except Exception as e:
+        print(f"Error loading document {file_name}: {str(e)}")
+        raise
 
 
 

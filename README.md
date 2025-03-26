@@ -1,52 +1,132 @@
-# Local RAG
+# Local RAG with Ollama
 
-The project implements the deployment of the language model locally, with the implementation of the response only using upload documents. The project includes loading with an internal database (possibly several timatic ones), as well as loading documents from the user and adding them to the general vector database. The project is already implementing one processed vector databases. And also the ability to start without them (from an empty database). You can also create your own database.
+A Retrieval-Augmented Generation (RAG) application that uses local language models via Ollama. This application allows you to:
+- Chat with documents by uploading PDF files
+- Get answers derived only from the content of your documents
+- Configure retrieval parameters for better results
 
+## Table of Contents
 ---
-1. [Setting](#setting)
-2. [Launch](#launch)
-3. [Examples](#examples)
-4. [Some Fun](#some-fun)
+1. [Requirements](#requirements)
+2. [Setup](#setup)
+3. [Launch](#launch)
+4. [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
+5. [Examples](#examples)
+6. [Multilingual Support](#multilingual-support)
 ---
 
+## Requirements
 
-### Setting
-1. Download and setup [Ollama](https://ollama.ai/download) for your os. For check ollama open comand line and type `ollama help`, you should see ollama help message.
-2. Download mistral in ollama. For this use `ollama run mistral` and wait for loading.
-3. Download the git repo.
-4. When you in git repo type `python -m venv env`
-5. Activate virtual environment `source env/bin/activate` or for Windows
-`.\env\Scripts\activate`.
-6. Install pip package `pip install -r ollama-rag-pip.txt`
+- [Ollama](https://ollama.ai/download) (for local LLM usage)
+- Python 3.9+ 
+- PyMuPDF (for PDF document loading)
+- FAISS (for vector storage)
 
-### Launch
-1. In another terminal, run ollama `ollama serve`
-2. The experiments were carried out on a powerful university server. To run on the server, enter the following command to run on a specific port. `python -m chainlit run app.py -h --port [your_port]`
-To run locally on your computer, you can enter a simplified command.
-`python -m chainlit run app.py`
-Your chatbot UI should now be accessible at http://localhost:8000.
+## Setup
 
+1. **Install Ollama**
+   - Download and install [Ollama](https://ollama.ai/download) for your OS
+   - Verify installation with: `ollama help`
 
+2. **Download a model**
+   - Run: `ollama pull deepseek-r1:7b` (or another compatible model)
+   - Wait for the model to download
 
+3. **Setup Python environment**
+   ```bash
+   # Clone the repository
+   git clone https://github.com/yourusername/local-rag-ollama.git
+   cd local-rag-ollama
 
-### Examples
+   # Create and activate virtual environment
+   python -m venv venv
+   
+   # For Linux/Mac
+   source venv/bin/activate
+   
+   # For Windows
+   .\venv\Scripts\activate
+   
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
+
+## Launch
+
+1. **Start Ollama service**
+   ```bash
+   # In a separate terminal
+   ollama serve
+   ```
+
+2. **Start the Chainlit application**
+   ```bash
+   # Basic usage
+   chainlit run app.py
+   
+   # With custom port
+   chainlit run app.py --port 8080
+   ```
+
+3. **Access the application**
+   - Open your browser and navigate to: http://localhost:8000 (or your custom port)
+
+## Common Issues and Troubleshooting
+
+### PyMuPDF Installation Issues
+
+If you encounter errors related to PDF loading:
+
+```bash
+# Install PyMuPDF separately
+pip install pymupdf==1.23.21
+```
+
+### Embedding Dimension Mismatch
+
+If you see errors about dimension mismatch:
+
+1. This happens when the FAISS vector store was created with a different embedding model than currently used
+2. Select "Empty db" when starting the application to create a fresh database
+3. Adjust the "How similar should the pieces be?" slider to a lower value (around 0.1) to handle potential negative scores
+
+### Negative Relevance Scores
+
+Ollama embeddings can sometimes produce negative similarity scores. The application has been updated to handle this by:
+
+1. Setting a much lower score threshold (0.1 instead of 0.5)
+2. Using proper error handling to catch and recover from issues
+
+### Model Loading Issues
+
+If Ollama fails to load the model:
+
+1. Ensure Ollama is running (`ollama serve`)
+2. Verify the model is downloaded (`ollama list`)
+3. Try a different model if needed (adjust in app.py)
+
+## Examples
 ---
 ![ML answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLAnswer.JPG)
-![Exmaple of ML answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLDoc.JPG)
+![Example of ML answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLDoc.JPG)
 ---
 ![Linear Regression in python answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/linearRegression.JPG)
 ![Linear Regression in python answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/reggressionLinear.JPG)
 ---
-![Neural wiki answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/neuralWikiAnswer.png)
-![Neural wiki answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/neuralWikiDoc.png)
 
+## Multilingual Support
 
+This application includes a novel approach to handling non-English queries:
 
-### Some Fun😛
-In general, due to the fact that the embedding model is only have English vectors, and the vectordatabase use search by vectors. If query is not on English lang, db cannot search relevant parts of documents in the database, so we decided to experiment. In general, we can use the power of the language model to understand other languages. The point is that in order to generate some answer to a question (hallucination), we don’t care if it’s correct or not, the most important thing for us is that it will end up in the vector space next to the possible relevent parts of documents to the question. And already using the search for this answer, we can find relevant pieces of documents and generate an answer.
-![Query sheme](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/queryScheme.jpg)
+1. When a non-English query is received, the LLM generates a potential answer (hallucination)
+2. This hallucination is then used to search the vector database for relevant document sections
+3. If relevant sections are found, they are used to generate a proper response
 
-Experiment with the Slovak question
+This technique allows the application to work with queries in languages other than English, even when the embedding model only supports English.
+
+![Query scheme](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/queryScheme.jpg)
+
+Example with a Slovak question:
 ![Slovak question example](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/querySchemeExample.jpg)
 
 

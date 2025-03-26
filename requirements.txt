@@ -1,10 +1,14 @@
 beautifulsoup4==4.12.3
 chainlit==1.1.202
-chromadb==0.4.24
+chromadb>=0.4.24
+faiss-cpu==1.7.4
 langchain==0.2.3
 langchain_community==0.2.4
 langchain_core==0.2.5
 langchain_experimental==0.0.60
 ollama==0.2.1
+PyMuPDF==1.23.21
+pydantic>=2.6.1
+qdrant-client==1.7.3
+sentence_transformers==2.5.1
 tqdm==4.66.1
-sentence_transformers
