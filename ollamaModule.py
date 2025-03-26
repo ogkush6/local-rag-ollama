@@ -1,4 +1,5 @@
 import ollama 
+from tqdm import tqdm
 
 
 
