@@ -1,0 +1,42 @@
+# Virtual environments
+venv/
+env/
+new_venv/
+chainlit_env/
+*_env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Git files
+.git/
+.gitignore
+
+# Environment variables
+.env
+
+# Database files that should be generated at runtime
+*.pkl
+*.faiss
+chroma_db/
+db/
+
+# Logs
+*.log
+logs/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Large unnecessary directories
+imgs/ 

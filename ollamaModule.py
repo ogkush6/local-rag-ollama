@@ -1,4 +1,4 @@
-import ollama 
+import ollama
 from tqdm import tqdm
 
 
@@ -35,13 +35,42 @@ def __is_model_available_locally(model_name: str) -> bool:
         return False
 
 
-def check_if_model_is_available(model_name: str) -> None:
-    if not __is_model_available_locally(model_name):
-        try:
-            __pull_model(model_name)
-        except:
-            raise Exception(
-                f"Unable to find model '{model_name}', please check the name and try again."
-            )
+def check_if_model_is_available(model_name, host="localhost"):
+    """
+    Check if a specific model is available in Ollama.
+    
+    Args:
+        model_name (str): Name of the model to check
+        host (str): Hostname or IP address of the Ollama server
+        
+    Returns:
+        bool: True if available, raises Exception if not
+    """
+    try:
+        # Set the base URL for the ollama client
+        client = ollama.Client(host=f"http://{host}:11434")
+        
+        # Get list of available models
+        models = client.list()
+        
+        # Convert to list of model names
+        model_names = [model['name'] for model in models['models']] if 'models' in models else []
+        
+        # Check if our model is in the list
+        if model_name in model_names:
+            return True
+        else:
+            # Try to pull the model
+            print(f"Model {model_name} not found. Attempting to pull...")
+            for progress in client.pull(model_name, stream=True):
+                if 'completed' in progress and progress['completed']:
+                    print(f"\nModel {model_name} pulled successfully")
+                    return True
+                elif 'status' in progress:
+                    print(f"\r{progress['status']}", end="")
+    except Exception as e:
+        raise Exception(f"Error connecting to Ollama at {host}: {str(e)}")
+    
+    raise Exception(f"Model {model_name} is not available and could not be pulled")
 
 

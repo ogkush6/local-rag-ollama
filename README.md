@@ -9,10 +9,11 @@ A Retrieval-Augmented Generation (RAG) application that uses local language mode
 ---
 1. [Requirements](#requirements)
 2. [Setup](#setup)
-3. [Launch](#launch)
-4. [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
-5. [Examples](#examples)
-6. [Multilingual Support](#multilingual-support)
+3. [Docker Setup](#docker-setup)
+4. [Launch](#launch)
+5. [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
+6. [Examples](#examples)
+7. [Multilingual Support](#multilingual-support)
 ---
 
 ## Requirements
@@ -21,6 +22,7 @@ A Retrieval-Augmented Generation (RAG) application that uses local language mode
 - Python 3.9+ 
 - PyMuPDF (for PDF document loading)
 - FAISS (for vector storage)
+- Docker and Docker Compose (for containerized setup)
 
 ## Setup
 
@@ -50,6 +52,79 @@ A Retrieval-Augmented Generation (RAG) application that uses local language mode
    # Install dependencies
    pip install -r requirements.txt
    ```
+
+## Docker Setup
+
+This application can be easily deployed using Docker and Docker Compose:
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/local-rag-ollama.git
+   cd local-rag-ollama
+   ```
+
+2. **Using helper scripts (recommended)**
+   - For Linux/Mac:
+     ```bash
+     # Make the script executable
+     chmod +x docker-start.sh
+     
+     # Run the helper script to build, start and pull the model
+     ./docker-start.sh
+     ```
+   
+   - For Windows (PowerShell):
+     ```powershell
+     # Run the PowerShell helper script
+     .\docker-start.ps1
+     ```
+     
+   These scripts will:
+   - Check if Docker is installed and running
+   - Build and start the containers
+   - Pull the necessary model if it doesn't exist
+   - Provide instructions for accessing the application
+
+3. **Manual setup**
+   - Build and start containers:
+     ```bash
+     docker-compose up -d
+     ```
+     
+   - Pull the model:
+     ```bash
+     docker-compose exec ollama ollama pull deepseek-r1:7b
+     ```
+
+4. **Access the application**
+   - Open your browser and navigate to http://localhost:8000
+
+### Windows Users
+
+If you're using Windows, here are some specific tips:
+
+- Ensure Docker Desktop for Windows is installed and running
+- You may need to enable WSL2 (Windows Subsystem for Linux) during Docker Desktop installation
+- If using the default CMD or PowerShell terminal, commands should work the same as shown above
+- For file paths in volumes, you may need to use Windows-style paths with Docker Desktop
+
+### Docker Configuration Notes:
+
+- The `docker-compose.yml` includes:
+  - An Ollama service that runs the language model
+  - The RAG application service connected to Ollama
+  - GPU support for Ollama if available
+  - Health checks for both services
+  - Persistent volume for Ollama models
+
+- For GPU support:
+  - Ensure NVIDIA Container Toolkit is installed
+  - For Windows, use NVIDIA Container Runtime with Docker Desktop
+  - The Docker Compose configuration automatically detects and uses available GPUs
+
+- Environment variables:
+  - `OLLAMA_HOST`: Set to "ollama" (the service name) for inter-container communication
+  - `PORT`: Application port (default is 8000)
 
 ## Launch
 
@@ -101,13 +176,29 @@ Ollama embeddings can sometimes produce negative similarity scores. The applicat
 
 If Ollama fails to load the model:
 
-1. Ensure Ollama is running (`ollama serve`)
-2. Verify the model is downloaded (`ollama list`)
+1. Ensure Ollama is running (`ollama serve` or Docker container is up)
+2. Verify the model is downloaded (`ollama list` or via Docker: `docker-compose exec ollama ollama list`)
 3. Try a different model if needed (adjust in app.py)
+
+### Docker Issues
+
+1. **Cannot connect to Ollama from app container**:
+   - Check if the Ollama container is healthy: `docker-compose ps`
+   - Verify the model is downloaded: `docker-compose exec ollama ollama list`
+   - Check logs: `docker-compose logs ollama`
+
+2. **Application container fails to start**:
+   - Check logs: `docker-compose logs rag-app`
+   - Ensure Ollama container is running first
+   - Verify network connectivity between containers
 
 ## Examples
 ---
-
+![ML answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLAnswer.JPG)
+![Example of ML answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/MLDoc.JPG)
+---
+![Linear Regression in python answer](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/linearRegression.JPG)
+![Linear Regression in python answer clue](https://github.com/sidjik/local-rag-ollama/blob/main/imgs/reggressionLinear.JPG)
 ---
 
 ## Multilingual Support

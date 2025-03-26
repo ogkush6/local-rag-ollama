@@ -2,3 +2,4 @@
 .chainlit/*
 .files/*
 *env/*
+chainlit.md

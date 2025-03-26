@@ -36,6 +36,9 @@ from chainlit.input_widget import Slider
 from ollamaModule import check_if_model_is_available
 from ollama import chat
 
+# Get Ollama host from environment variable, default to localhost
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "localhost")
+print(f"Using Ollama host: {OLLAMA_HOST}")
 
 PROMPT_TEMPLATE = """
     ### Instuction: 
@@ -74,18 +77,20 @@ model = "deepseek-r1:7b"
 print(">> scanning for pdf documents")
 print(">> embedding pdfs")
 try:
-    check_if_model_is_available(model)
+    check_if_model_is_available(model, host=OLLAMA_HOST)
 except Exception as e:
     print(e)
     sys.exit()
 
 embedding = OllamaEmbeddings(
     model=model,
+    base_url=f"http://{OLLAMA_HOST}:11434",
 )
         
 print(">>> initializing llm " + model)
 llm = Ollama(
     model=model,
+    base_url=f"http://{OLLAMA_HOST}:11434",
 )
 
 
@@ -112,7 +117,7 @@ async def on_chat_start():
             
         # Check for model availability
         try:
-            check_if_model_is_available(model)
+            check_if_model_is_available(model, host=OLLAMA_HOST)
             print(f"Model {model} is available")
         except Exception as e:
             error_msg = f"Error checking model availability: {str(e)}"
